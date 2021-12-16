@@ -1,0 +1,4 @@
+{
+  "mongoURI": "mongodb+srv://Lukhee:iPmwjmr8faXs6qCm@prananet.gtvwa.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+  "jwtSecret": "Pra_erp_secret_key"
+}
