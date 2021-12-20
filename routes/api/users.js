@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+let mongoose = require('mongoose');
 const auth = require('../../middleware/auth');
 const config = require('config');
 const { check, validationResult } = require('express-validator');
@@ -15,7 +16,7 @@ const Department = require('../../models/DepartmentModel');
 
 router.get('/', auth, async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find().select('-password');
     res.json(users);
   } catch (error) {
     console.error(err.message);
@@ -31,7 +32,7 @@ router.post(
   '/',
   [
     check('name', 'Name is required ').not().isEmpty(),
-    check('department', 'Department is required ').not().isEmpty(),
+    check('departmentId', 'Department is required ').not().isEmpty(),
     check('roles', 'Role is required ').not().isEmpty(),
     check(
       'password',
@@ -45,7 +46,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, password, department, roles } = req.body;
+    const { name, email, password, departmentId, roles } = req.body;
 
     try {
       let user = await User.findOne({ email });
@@ -54,9 +55,8 @@ router.post(
           .status(400)
           .json({ errors: [{ msg: 'User already exist' }] });
       }
-
       user = new User({
-        name,
+        name: name.toLowerCase().trim(),
         email,
         password,
         departmentId,
@@ -65,12 +65,13 @@ router.post(
       // convert roles to an arrays
       user.roles = roles.split(',').map((role) => role.trim());
       //  find department and merge it id if found
-      const departmentName = await Department.findOne({ name: department });
+      const departmentName = await Department.findById(departmentId);
       if (!departmentName) {
         return res
           .status(400)
           .json({ errors: [{ msg: 'Department does not exist' }] });
       }
+
       user.departmentId = departmentName._id;
       // Encrypt Password
       const salt = await bcrypt.genSalt(10);
@@ -78,6 +79,7 @@ router.post(
       const payload = {
         user: {
           id: user.id,
+          role: user.roles[0],
         },
       };
 
@@ -103,22 +105,22 @@ router.post(
 );
 
 // @Route   Get api/user/profile
-// @desc    Fetch my  Profile 
+// @desc    Fetch my  Profile
 // @Access  Private
 
 router.get('/profile', auth, async (req, res) => {
   try {
-    const profile = await Profile.findOne({
+    const profile = await Profile.find({
       user: req.user.id,
-    }).populate('user', ['name', 'email']);
+    }).populate('user', ['name', 'email', 'roles', 'departmentId']);
     if (!profile) {
       return res.status(400).send('No profile found for this user');
     }
     res.json(profile);
   } catch (error) {
+    console.log(error);
     res.status(500).send('server down');
   }
-  res.send('User Route');
 });
 
 // @Route   Post api/auth/profile
@@ -156,7 +158,6 @@ router.post(
       }
 
       // Create A profile
-      console.log("profile Update")
       profile = new Profile(profileFields);
       await profile.save();
       return res.json(profile);

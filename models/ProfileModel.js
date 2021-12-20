@@ -20,6 +20,6 @@ const ProfileSchema = new Mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+},{ timestamps: true });
 
 module.exports = Profile = Mongoose.model('profile', ProfileSchema);

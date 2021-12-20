@@ -10,6 +10,6 @@ const DepartmentSchema = new Mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+}, { timestamps: true });
 
 module.exports = Department = Mongoose.model('department', DepartmentSchema);

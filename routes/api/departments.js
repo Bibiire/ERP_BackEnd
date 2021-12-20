@@ -5,7 +5,7 @@ const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
 
 // @Route   Get api/department
-// @desc    Test Route
+// @desc    Get all departments
 // @Access  Private
 router.get('/', auth, async (req, res) => {
   try {
@@ -21,15 +21,16 @@ router.get('/', auth, async (req, res) => {
 // @Access  Private
 router.post('/', auth, async (req, res) => {
   const { department } = req.body;
+  const cloneDepartment = department.toLowerCase().trim()
   try {
-    let departmentName = await Department.findOne({ name: department });
+    let departmentName = await Department.findOne({ name: cloneDepartment });
     if (departmentName) {
       return res
         .status(400)
         .json({ errors: [{ msg: 'Department already exist' }] });
     }
     departmentName = new Department({
-      name: department,
+      name: cloneDepartment,
     });
 
     departmentName.save();

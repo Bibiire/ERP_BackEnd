@@ -41,13 +41,12 @@ router.post(
     const { name, password } = req.body;
 
     try {
-      let user = await User.findOne({ name });
+      let user = await User.findOne({ name: name.toLowerCase().trim() });
       if (!user) {
         return res
           .status(400)
           .json({ errors: [{ msg: 'Invalid Credentials' }] });
       }
-
       // compare Password
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
@@ -58,6 +57,8 @@ router.post(
       const payload = {
         user: {
           id: user.id,
+          role: user.roles[0],
+          departmentId : user.departmentId
         },
       };
 

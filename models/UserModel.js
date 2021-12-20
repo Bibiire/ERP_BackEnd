@@ -15,7 +15,10 @@ const UserSchema = new Mongoose.Schema({
     type: String,
     require: true,
   },
-  department: {
+  position: {
+    type: String
+  },
+  departmentId: {
     type: Mongoose.Schema.Types.ObjectId,
     ref: 'department',
   },
@@ -27,6 +30,6 @@ const UserSchema = new Mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+}, { timestamps: true });
 
 module.exports = User = Mongoose.model('user', UserSchema);
