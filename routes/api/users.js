@@ -10,6 +10,20 @@ const User = require('../../models/UserModel');
 const Profile = require('../../models/ProfileModel');
 const Department = require('../../models/DepartmentModel');
 
+// @Route   Get api/users/user
+// @desc    fetch user
+// @Access  Private
+
+router.get('/user', auth, async (req, res) => {
+  try {
+    const users = await User.findOne({id: req.user.id}).select('-password');
+    res.json(users);
+  } catch (error) {
+    console.error(err.message);
+    res.status(500).send('Server Down');
+  }
+});
+
 // @Route   Get api/users
 // @desc    fetch all user
 // @Access  Private
