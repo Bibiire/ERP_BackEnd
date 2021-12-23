@@ -54,9 +54,10 @@ router.post(
           .status(400)
           .json({ errors: [{ msg: 'Invalid Credentials' }] });
       }
+      console.log(user)
       const payload = {
         user: {
-          id: user.id,
+          id: user._id,
           role: user.roles[0],
           departmentId : user.departmentId
         },

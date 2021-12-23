@@ -16,7 +16,7 @@ const Department = require('../../models/DepartmentModel');
 
 router.get('/user', auth, async (req, res) => {
   try {
-    const users = await User.findOne({id: req.user.id}).select('-password');
+    const users = await User.findById(req.user.id).select('-password');
     res.json(users);
   } catch (error) {
     console.error(err.message);
