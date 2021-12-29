@@ -36,10 +36,13 @@ router.get('/', auth, async (req, res) => {
       break;
 
     case 'authorizer':
+      queryParams['inputter.status'] = true;
       queryParams['verifier.status'] = true;
       break;
 
     case 'approver':
+      queryParams['inputter.status'] = true;
+      queryParams['verifier.status'] = true;
       queryParams['authorizer.status'] = true;
       break;
 
@@ -81,7 +84,7 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 // @Route   Post api/request
-// @desc    Create or Update request by Creater
+// @desc    Create or Update request by Creator
 // @Access  Private
 router.post(
   '/',
