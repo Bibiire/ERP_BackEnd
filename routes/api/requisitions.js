@@ -182,14 +182,8 @@ router.post(
 router.put('/:id', auth, async (req, res) => {
   const requestId = req.params.id;
   const { status } = req.body;
+  const user = req.user
   try {
-    // check if the user is authorize here
-    // const user = req.user;
-    // if (user.role === 'user')
-    //   return res
-    //     .status(401)
-    //     .json({ msg: "you aren't authorized to view this page" });
-    // check if the requisition exit
     const requestResult = await Requisition.findById(requestId);
     if (!requestResult) {
       return res.status(401).json({ msg: "Requisition can't be found" });
