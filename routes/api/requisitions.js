@@ -181,19 +181,14 @@ router.post(
 // @Access  Private
 router.put('/:id', auth, async (req, res) => {
   const requestId = req.params.id;
-  const {
-    verifyStatus,
-    acc_checkerStatus,
-    authorizerStatus,
-    approverStatus,
-  } = req.body;
+  const { status } = req.body;
   try {
     // check if the user is authorize here
-    const user = req.user;
-    if (user.role === 'user')
-      return res
-        .status(401)
-        .json({ msg: "you aren't authorized to view this page" });
+    // const user = req.user;
+    // if (user.role === 'user')
+    //   return res
+    //     .status(401)
+    //     .json({ msg: "you aren't authorized to view this page" });
     // check if the requisition exit
     const requestResult = await Requisition.findById(requestId);
     if (!requestResult) {
@@ -202,27 +197,32 @@ router.put('/:id', auth, async (req, res) => {
     // set the update field
     const update = {};
     switch (user.role) {
+      case 'user':
+        update.inputter = {};
+        update.inputter.status = status;
+        break;
+
       case 'verifier':
         update.verify = {};
-        update.verify.status = verifyStatus;
+        update.verify.status = status;
         update.verify.verifier = user.id;
         break;
 
       case 'acc_checker':
         update.acc_check = {};
-        update.acc_check.status = acc_checkerStatus;
+        update.acc_check.status = status;
         update.acc_check.acc_checker = user.id;
         break;
 
       case 'authorizer':
         update.authorize = {};
-        update.authorize.status = authorizerStatus;
+        update.authorize.status = status;
         update.authorize.authorizer = user.id;
         break;
 
       case 'approver':
         update.approve = {};
-        update.approve.status = approverStatus;
+        update.approve.status = status;
         update.approve.approver = user.id;
         break;
 
