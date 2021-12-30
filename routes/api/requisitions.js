@@ -42,8 +42,8 @@ router.get('/', auth, async (req, res) => {
 
     case 'approver':
       queryParams['inputter.status'] = true;
-      queryParams['verifier.status'] = true;
-      queryParams['authorizer.status'] = true;
+      queryParams['verify.status'] = true;
+      queryParams['authorize.status'] = true;
       break;
 
     default:
@@ -182,7 +182,7 @@ router.post(
 router.put('/:id', auth, async (req, res) => {
   const requestId = req.params.id;
   const { status } = req.body;
-  const user = req.user
+  const user = req.user;
   try {
     const requestResult = await Requisition.findById(requestId);
     if (!requestResult) {
@@ -190,6 +190,9 @@ router.put('/:id', auth, async (req, res) => {
     }
     // set the update field
     const update = {};
+    console.log(status);
+    console.log(user.role);
+    console.log(status);
     switch (user.role) {
       case 'user':
         update.inputter = {};
@@ -224,6 +227,7 @@ router.put('/:id', auth, async (req, res) => {
         return res.status(401).json({ msg: 'user not authorized' });
         break;
     }
+    console.log(update);
     // update requisition and save
     const updatedRequest = await Requisition.findByIdAndUpdate(
       requestId,
