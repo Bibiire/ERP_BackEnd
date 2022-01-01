@@ -14,7 +14,6 @@ router.get('/', auth, async (req, res) => {
   if (reqQuery) {
     queryParams = reqQuery;
   }
-  console.log(req.user.role);
   // queryParameter = {
   //   'inputter.status': false,
   //   date: {
@@ -52,7 +51,7 @@ router.get('/', auth, async (req, res) => {
   }
   try {
     console.log(queryParams);
-    const requests = await Requisition.find(queryParams);
+    const requests = await Requisition.find(queryParams).sort({date: 1});
     res.json(requests);
   } catch (error) {
     console.log(error);
