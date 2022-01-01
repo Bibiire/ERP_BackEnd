@@ -51,7 +51,7 @@ router.get('/', auth, async (req, res) => {
   }
   try {
     console.log(queryParams);
-    const requests = await Requisition.find(queryParams).sort({date: 1});
+    const requests = await Requisition.find(queryParams).sort({date: -1});
     res.json(requests);
   } catch (error) {
     console.log(error);
