@@ -36,7 +36,7 @@ router.get('/', auth, async (req, res) => {
 
     case 'authorizer':
       queryParams['inputter.status'] = true;
-      queryParams['verifier.status'] = true;
+      queryParams['verify.status'] = true;
       break;
 
     case 'approver':
