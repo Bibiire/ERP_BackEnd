@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../../middleware/auth');
 const Requisition = require('../../models/RequisitionModel');
+const Department = require('../../models/DepartmentModel');
 const { check, validationResult } = require('express-validator');
 
 // @Route   Get api/request
@@ -14,14 +15,12 @@ router.get('/', auth, async (req, res) => {
   if (reqQuery) {
     queryParams = reqQuery;
   }
-  // queryParameter = {
-  //   'inputter.status': false,
-  //   date: {
-  //     $gte: new Date(2021, 11, 16),
-  //     $lt: new Date(2021, 12, 17),
-  //   },
-  // };
-  switch (req.user.role) {
+
+  console.log(req.query.role)
+  console.log(req.user.role)
+  let role = req.query?.role || req.user.role
+  console.log(role)
+  switch (role) {
     case 'user':
       queryParams.user = req.user.id;
       break;
@@ -37,6 +36,12 @@ router.get('/', auth, async (req, res) => {
     case 'authorizer':
       queryParams['inputter.status'] = true;
       queryParams['verify.status'] = true;
+      if (req.user.departmentId === '61bc653dc0c5770d6f802613') {
+        queryParams['ITRelated'] = true;
+      } else {
+        console.log("not IT item")
+        queryParams['ITRelated'] = false;
+      }
       break;
 
     case 'approver':
@@ -50,8 +55,7 @@ router.get('/', auth, async (req, res) => {
       break;
   }
   try {
-    console.log(queryParams);
-    const requests = await Requisition.find(queryParams).sort({date: -1});
+    const requests = await Requisition.find(queryParams).sort({ date: -1 });
     res.json(requests);
   } catch (error) {
     console.log(error);
@@ -189,10 +193,7 @@ router.put('/:id', auth, async (req, res) => {
     }
     // set the update field
     const update = {};
-    console.log(status);
-    console.log(user.role);
-    console.log(status);
-    switch (user.role) {
+    switch (req.query.role || user.role[0]) {
       case 'user':
         update.inputter = {};
         update.inputter.status = status;
