@@ -16,10 +16,7 @@ router.get('/', auth, async (req, res) => {
     queryParams = reqQuery;
   }
 
-  console.log(req.query.role)
-  console.log(req.user.role)
-  let role = req.query?.role || req.user.role
-  console.log(role)
+  let role = req.query?.role || req.user.role[0]
   switch (role) {
     case 'user':
       queryParams.user = req.user.id;
@@ -39,7 +36,7 @@ router.get('/', auth, async (req, res) => {
       if (req.user.departmentId === '61bc653dc0c5770d6f802613') {
         queryParams['ITRelated'] = true;
       } else {
-        console.log("not IT item")
+        // console.log("not IT item")
         queryParams['ITRelated'] = false;
       }
       break;

@@ -8,9 +8,8 @@ const connectDB = async ()=> {
       useNewUrlParser: true,
     });
 
-    console.log("mongodb connect")
   } catch (error) {
-    console.log(error.message)
+    // console.log(error.message)
     // Exit Process
 
     process.exit(1)
