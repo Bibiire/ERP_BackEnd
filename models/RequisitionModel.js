@@ -1,89 +1,96 @@
 const Mongoose = require('mongoose');
 
-const RequestSchema = new Mongoose.Schema({
-  user: {
-    type: Mongoose.Schema.Types.ObjectId,
-    ref: 'user',
-  },
-  itemName: {
-    type: String,
-    required: true,
-  },
-  unitPrice: {
-    type: Number,
-    required: true,
-  },
-  discount: {
-    type: Number,
-  },
-  totalPrice: {
-    type: Number,
-    required: true,
-  },
-  quantity: {
-    type: Number,
-    required: true,
-  },
-  ITRelated: {
-    type: Boolean,
-    required: true,
-  },
-  vendor: {
-    type: String,
-    required: true,
-  },
-  departmentalId: {
-    type: String,
-    required: true,
-  },
-  note: {
-    type: String,
-  },
-  comment: {
-    type: String,
-  },
-  inputter: {
-    status: {
-      type: Boolean,
-      default: false
+const RequestSchema = new Mongoose.Schema(
+  {
+    user: {
+      type: Mongoose.Schema.Types.ObjectId,
+      ref: 'user',
     },
-  },
-  verify: {
-    status: {
-      type: Boolean,
+    itemName: {
+      type: String,
+      required: true,
     },
-    verifier: {
+    unitPrice: {
+      type: Number,
+      required: true,
+    },
+    discount: {
+      type: Number,
+    },
+    totalPrice: {
+      type: Number,
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      required: true,
+    },
+    ITRelated: {
+      type: Boolean,
+      required: true,
+    },
+    vendor: {
+      type: String,
+      required: true,
+    },
+    departmentalId: {
+      type: String,
+      required: true,
+    },
+    note: {
       type: String,
     },
-  },
-  acc_check: {
-    status: {
-      type: Boolean,
-    },
-    acc_checker: {
+    comment: {
       type: String,
     },
-  },
-  authorize: {
-    status: {
-      type: Boolean,
+    inputter: {
+      status: {
+        type: Boolean,
+        default: false,
+      },
     },
-    authorizer: {
-      type: String,
+    verify: {
+      status: {
+        type: Boolean,
+      },
+      verifier: {
+        type: Mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+      },
+    },
+    acc_check: {
+      status: {
+        type: Boolean,
+      },
+      acc_checker: {
+        type: Mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+      },
+    },
+    authorize: {
+      status: {
+        type: Boolean,
+      },
+      authorizer: {
+        type: Mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+      },
+    },
+    approve: {
+      status: {
+        type: Boolean,
+      },
+      approver: {
+        type: Mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+      },
+    },
+    date: {
+      type: Date,
+      default: Date.now,
     },
   },
-  approve: {
-    status: {
-      type: Boolean,
-    },
-    approver: {
-      type: String,
-    },
-  },
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-},{ timestamps: true });
+  { timestamps: true }
+);
 
 module.exports = Request = Mongoose.model('request', RequestSchema);

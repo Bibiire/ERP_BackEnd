@@ -4,6 +4,7 @@ const auth = require('../../middleware/auth');
 const Requisition = require('../../models/RequisitionModel');
 const Department = require('../../models/DepartmentModel');
 const { check, validationResult } = require('express-validator');
+const { query } = require('express');
 
 // @Route   Get api/request
 // @desc    Fetch all request by user/creator
@@ -15,8 +16,9 @@ router.get('/', auth, async (req, res) => {
   if (reqQuery) {
     queryParams = reqQuery;
   }
+  queryParams.departmentalId;
 
-  let role = req.query?.role || req.user.role[0]
+  let role = req.query?.role || req.user.role[0];
   switch (role) {
     case 'user':
       queryParams.user = req.user.id;
@@ -36,7 +38,6 @@ router.get('/', auth, async (req, res) => {
       if (req.user.departmentId === '61bc653dc0c5770d6f802613') {
         queryParams['ITRelated'] = true;
       } else {
-        // console.log("not IT item")
         queryParams['ITRelated'] = false;
       }
       break;
@@ -49,7 +50,6 @@ router.get('/', auth, async (req, res) => {
 
     default:
       return res.status(401).json({ msg: 'user not authorized' });
-      break;
   }
   try {
     const requests = await Requisition.find(queryParams).sort({ date: -1 });
@@ -66,11 +66,29 @@ router.get('/', auth, async (req, res) => {
 router.get('/:id', auth, async (req, res) => {
   const requestId = req.params.id;
   try {
-    const result = await Requisition.findById(requestId).populate('user', [
-      'departmentId',
-      'name',
-      'email',
-    ]);
+    const result = await Requisition.findById(requestId)
+      .populate('user', ['departmentId', 'name', 'email'])
+      .populate({
+        path: 'verify',
+        populate: {
+          path: 'verifier',
+          select: 'name',
+        },
+      })
+      .populate({
+        path: 'authorize',
+        populate: {
+          path: 'authorizer',
+          select: 'name',
+        },
+      })
+      .populate({
+        path: 'approve',
+        populate: {
+          path: 'approver',
+          select: 'name',
+        },
+      });
     if (!result) {
       return res
         .status(401)
@@ -224,7 +242,6 @@ router.put('/:id', auth, async (req, res) => {
         return res.status(401).json({ msg: 'user not authorized' });
         break;
     }
-    console.log(update);
     // update requisition and save
     const updatedRequest = await Requisition.findByIdAndUpdate(
       requestId,
