@@ -38,10 +38,21 @@ const RequestSchema = new Mongoose.Schema(
       required: true,
     },
     note: {
-      type: String,
-    },
-    comment: {
-      type: String,
+      isEdited: {
+        type: Boolean,
+        default: false,
+      },
+      comments: [
+        {
+          value: {
+            type: String,
+          },
+          userId: {
+            type: Mongoose.Schema.Types.ObjectId,
+            ref: 'user',
+          },
+        },
+      ],
     },
     inputter: {
       status: {

@@ -133,6 +133,7 @@ router.post(
       note,
       comment,
       status,
+      editedNote,
     } = req.body;
     const { requestId } = req.query;
 
@@ -154,9 +155,16 @@ router.post(
         update.ITRelated = ITRelated;
         update.quantity = quantity;
         update.vendor = vendor;
-        update.note = note;
-        if (comment) {
-          update.comment = comment;
+        if (note) {
+          if (req.user.id === requestResult.user) {
+            update.note.isEdited = false;
+          } else {
+            update.note.isEdited = true;
+          }
+          update.note.comment = [
+            ...requestResult.note,
+            { value: note, userId: req.user.id },
+          ];
         }
         // for inputter
         if (status) {
