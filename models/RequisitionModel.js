@@ -12,14 +12,12 @@ const RequestSchema = new Mongoose.Schema(
     },
     unitPrice: {
       type: Number,
-      required: true,
     },
     discount: {
       type: Number,
     },
     totalPrice: {
       type: Number,
-      required: true,
     },
     quantity: {
       type: Number,
@@ -37,23 +35,21 @@ const RequestSchema = new Mongoose.Schema(
       type: String,
       required: true,
     },
-    note: {
-      isEdited: {
-        type: Boolean,
-        default: false,
-      },
-      comments: [
-        {
-          value: {
-            type: String,
-          },
-          userId: {
-            type: Mongoose.Schema.Types.ObjectId,
-            ref: 'user',
-          },
-        },
-      ],
+    isEdited: {
+      type: Boolean,
+      default: true,
     },
+    comments: [
+      {
+        value: {
+          type: String,
+        },
+        userId: {
+          type: Mongoose.Schema.Types.ObjectId,
+          ref: 'user',
+        },
+      },
+    ],
     inputter: {
       status: {
         type: Boolean,

@@ -30,6 +30,7 @@ router.get('/', auth, async (req, res) => {
       break;
 
     case 'acc_checker':
+      queryParams['approve.status'] = true;
       break;
 
     case 'authorizer':
@@ -88,6 +89,13 @@ router.get('/:id', auth, async (req, res) => {
           path: 'approver',
           select: 'name',
         },
+      })
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'userId',
+          select: 'name',
+        },
       });
     if (!result) {
       return res
@@ -108,8 +116,8 @@ router.post(
   '/',
   [
     check('itemName', 'Item can not be empty').not().isEmpty(),
-    check('unitPrice', 'Unit Price can not be empty').not().isEmpty(),
-    check('totalPrice', 'Total Price can not be empty').not().isEmpty(),
+    // check('unitPrice', 'Unit Price can not be empty').not().isEmpty(),
+    // check('totalPrice', 'Total Price can not be empty').not().isEmpty(),
     check('ITRelated', 'Item type can not be empty').not().isEmpty(),
     check('vendor', 'Vendor can not be empty').not().isEmpty(),
     check('quantity', 'quantity can not be empty').not().isEmpty(),
@@ -131,9 +139,7 @@ router.post(
       vendor,
       departmentalId,
       note,
-      comment,
       status,
-      editedNote,
     } = req.body;
     const { requestId } = req.query;
 
@@ -155,21 +161,26 @@ router.post(
         update.ITRelated = ITRelated;
         update.quantity = quantity;
         update.vendor = vendor;
-        if (note) {
+        if (note && note.localeCompare(requestResult.note?.value !== 0)) {
+          update.note = {};
+          let comment = { value: note, userId: req.user.id };
           if (req.user.id === requestResult.user) {
-            update.note.isEdited = false;
+            update.isEdited = false;
           } else {
-            update.note.isEdited = true;
+            update.isEdited = true;
           }
-          update.note.comment = [
-            ...requestResult.note,
-            { value: note, userId: req.user.id },
-          ];
-        }
-        // for inputter
-        if (status) {
-          update.inputter = {};
-          update.inputter.status = status;
+
+          const updatedRequest = await Requisition.findByIdAndUpdate(
+            requestId,
+            {
+              $set: update,
+              $push: { comments: comment },
+            },
+            {
+              new: true,
+            }
+          );
+          return res.json(updatedRequest);
         }
         const updatedRequest = await Requisition.findByIdAndUpdate(
           requestId,
@@ -191,7 +202,12 @@ router.post(
         quantity,
         vendor,
         departmentalId,
-        note,
+        comments: [
+          {
+            value: note,
+            userId: req.user.id,
+          },
+        ],
       });
       const result = await request.save();
       return res.json(result);
@@ -216,6 +232,7 @@ router.put('/:id', auth, async (req, res) => {
     }
     // set the update field
     const update = {};
+    update.isEdited = false;
     switch (req.query.role || user.role[0]) {
       case 'user':
         update.inputter = {};
@@ -248,7 +265,6 @@ router.put('/:id', auth, async (req, res) => {
 
       default:
         return res.status(401).json({ msg: 'user not authorized' });
-        break;
     }
     // update requisition and save
     const updatedRequest = await Requisition.findByIdAndUpdate(
