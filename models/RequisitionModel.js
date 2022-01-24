@@ -32,7 +32,8 @@ const RequestSchema = new Mongoose.Schema(
       required: true,
     },
     departmentalId: {
-      type: String,
+      type:  Mongoose.Schema.Types.ObjectId,
+      ref: 'department',
       required: true,
     },
     isEdited: {
