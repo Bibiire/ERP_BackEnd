@@ -53,7 +53,18 @@ router.get('/', auth, async (req, res) => {
       return res.status(401).json({ msg: 'user not authorized' });
   }
   try {
-    const requests = await Requisition.find(queryParams).sort({ date: -1 });
+    const requests = await Requisition.find(queryParams).sort({ date: -1 })
+    .populate({
+      path: 'verify',
+      populate: {
+        path: 'verifier',
+        select: 'name',
+      },
+    })
+    .populate({
+      path: 'approve',
+      select: 'name'
+    });
     res.json(requests);
   } catch (error) {
     console.log(error);
