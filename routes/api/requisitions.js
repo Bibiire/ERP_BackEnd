@@ -62,7 +62,7 @@ router.get('/', auth, async (req, res) => {
       },
     })
     .populate({
-      path: 'approve',
+      path: 'departmentalId',
       select: 'name'
     });
     res.json(requests);
