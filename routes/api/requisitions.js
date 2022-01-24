@@ -61,10 +61,7 @@ router.get('/', auth, async (req, res) => {
         select: 'name',
       },
     })
-    .populate({
-      path: 'departmentalId',
-      select: 'name'
-    });
+    .populate('departmentalId','name');
     res.json(requests);
   } catch (error) {
     console.log(error);
