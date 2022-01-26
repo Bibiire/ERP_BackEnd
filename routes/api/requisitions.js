@@ -210,6 +210,7 @@ router.post(
         totalPrice,
         ITRelated,
         quantity,
+        imgUrl,
         vendor,
         departmentalId,
         comments: [
