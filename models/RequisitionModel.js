@@ -23,6 +23,10 @@ const RequestSchema = new Mongoose.Schema(
       type: Number,
       required: true,
     },
+    directRequest: {
+      type: Boolean,
+      default: false,
+    },
     imgUrl: {
       type: String,
     },
@@ -35,7 +39,7 @@ const RequestSchema = new Mongoose.Schema(
       required: true,
     },
     departmentalId: {
-      type:  Mongoose.Schema.Types.ObjectId,
+      type: Mongoose.Schema.Types.ObjectId,
       ref: 'department',
       required: true,
     },

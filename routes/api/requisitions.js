@@ -47,6 +47,7 @@ router.get('/', auth, async (req, res) => {
       queryParams['inputter.status'] = true;
       queryParams['verify.status'] = true;
       queryParams['authorize.status'] = true;
+      queryParams['directRequest'] = true;
       break;
 
     default:
@@ -145,6 +146,7 @@ router.post(
       discount,
       quantity,
       vendor,
+      directRequest,
       departmentalId,
       note,
       imgUrl,
@@ -170,6 +172,7 @@ router.post(
         update.ITRelated = ITRelated;
         update.quantity = quantity;
         update.vendor = vendor;
+        update.directRequest = directRequest;
         update.imgUrl = imgUrl;
         if (note && note.localeCompare(requestResult.note?.value !== 0)) {
           update.note = {};
@@ -212,6 +215,7 @@ router.post(
         quantity,
         imgUrl,
         vendor,
+        directRequest,
         departmentalId,
         comments: [
           {
