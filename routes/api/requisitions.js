@@ -147,6 +147,7 @@ router.post(
       vendor,
       departmentalId,
       note,
+      imgUrl,
       status,
     } = req.body;
     const { requestId } = req.query;
@@ -169,6 +170,7 @@ router.post(
         update.ITRelated = ITRelated;
         update.quantity = quantity;
         update.vendor = vendor;
+        update.imgUrl = imgUrl;
         if (note && note.localeCompare(requestResult.note?.value !== 0)) {
           update.note = {};
           let comment = { value: note, userId: req.user.id };

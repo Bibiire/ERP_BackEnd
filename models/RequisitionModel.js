@@ -23,6 +23,9 @@ const RequestSchema = new Mongoose.Schema(
       type: Number,
       required: true,
     },
+    imgUrl: {
+      type: String,
+    },
     ITRelated: {
       type: Boolean,
       required: true,
