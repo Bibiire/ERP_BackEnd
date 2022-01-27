@@ -10,8 +10,11 @@ const { query } = require('express');
 // @desc    Fetch all request by user/creator
 // @Access  Private
 router.get('/', auth, async (req, res) => {
-  let queryParams = {};
+  let queryParams = {},
+    cloneQueryParams;
+  let directQueryParams = {};
   const reqQuery = req.query;
+  directQueryParams.directRequest = false;
 
   if (reqQuery) {
     queryParams = reqQuery;
@@ -22,15 +25,18 @@ router.get('/', auth, async (req, res) => {
   switch (role) {
     case 'user':
       queryParams.user = req.user.id;
+      cloneQueryParams = queryParams;
       break;
 
     case 'verifier':
       queryParams.departmentalId = req.user.departmentId;
       queryParams['inputter.status'] = true;
+      cloneQueryParams = queryParams;
       break;
 
     case 'acc_checker':
       queryParams['approve.status'] = true;
+      cloneQueryParams = queryParams;
       break;
 
     case 'authorizer':
@@ -41,28 +47,36 @@ router.get('/', auth, async (req, res) => {
       } else {
         queryParams['ITRelated'] = false;
       }
+      cloneQueryParams = queryParams;
       break;
 
     case 'approver':
       queryParams['inputter.status'] = true;
       queryParams['verify.status'] = true;
       queryParams['authorize.status'] = true;
-      queryParams['directRequest'] = true;
+      directQueryParams.directRequest = true;
+      directQueryParams['inputter.status'] = true;
+      directQueryParams['verify.status'] = true;
+      cloneQueryParams = {
+        $or: [directQueryParams, queryParams],
+      };
       break;
 
     default:
       return res.status(401).json({ msg: 'user not authorized' });
   }
+  console.log(cloneQueryParams);
   try {
-    const requests = await Requisition.find(queryParams).sort({ date: -1 })
-    .populate({
-      path: 'verify',
-      populate: {
-        path: 'verifier',
-        select: 'name',
-      },
-    })
-    .populate('departmentalId','name');
+    const requests = await Requisition.find(cloneQueryParams)
+      .sort({ date: -1 })
+      .populate({
+        path: 'verify',
+        populate: {
+          path: 'verifier',
+          select: 'name',
+        },
+      })
+      .populate('departmentalId', 'name');
     res.json(requests);
   } catch (error) {
     console.log(error);
@@ -120,7 +134,7 @@ router.get('/:id', auth, async (req, res) => {
 
 // @Route   Post api/request
 // @desc    Create or Update request by Creator
-// @Access  Private 
+// @Access  Private
 router.post(
   '/',
   [
