@@ -57,6 +57,8 @@ router.get('/', auth, async (req, res) => {
       directQueryParams.directRequest = true;
       directQueryParams['inputter.status'] = true;
       directQueryParams['verify.status'] = true;
+      if (req.query.departmentalId)
+        directQueryParams['departmentalId'] = req.query.departmentalId;
       cloneQueryParams = {
         $or: [directQueryParams, queryParams],
       };
@@ -65,7 +67,6 @@ router.get('/', auth, async (req, res) => {
     default:
       return res.status(401).json({ msg: 'user not authorized' });
   }
-  console.log(cloneQueryParams);
   try {
     const requests = await Requisition.find(cloneQueryParams)
       .sort({ date: -1 })
