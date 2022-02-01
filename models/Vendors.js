@@ -7,12 +7,31 @@ const VendorSchema = new Mongoose.Schema(
       require: true,
       unique: true,
     },
+    phone_no: {
+      type: String,
+      require: true,
+    },
     location: {
       type: String,
+      require: true,
     },
-    date: {
-      type: Date,
-      default: Date.now,
+    bank_details: {
+      bank_name: {
+        type: String,
+        require: true,
+      },
+      acc_name: {
+        type: String,
+        require: true,
+      },
+      acc_no: {
+        type: Number,
+        require: true,
+      },
+    },
+    status: {
+      type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }

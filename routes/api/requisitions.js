@@ -77,6 +77,7 @@ router.get('/', auth, async (req, res) => {
           select: 'name',
         },
       })
+      .populate('user', 'name')
       .populate('departmentalId', 'name');
     res.json(requests);
   } catch (error) {
@@ -140,8 +141,6 @@ router.post(
   '/',
   [
     check('itemName', 'Item can not be empty').not().isEmpty(),
-    // check('unitPrice', 'Unit Price can not be empty').not().isEmpty(),
-    // check('totalPrice', 'Total Price can not be empty').not().isEmpty(),
     check('ITRelated', 'Item type can not be empty').not().isEmpty(),
     check('vendor', 'Vendor can not be empty').not().isEmpty(),
     check('quantity', 'quantity can not be empty').not().isEmpty(),
@@ -207,7 +206,7 @@ router.post(
             {
               new: true,
             }
-          );
+          ).populate('user', 'name');
           return res.json(updatedRequest);
         }
         const updatedRequest = await Requisition.findByIdAndUpdate(
@@ -216,7 +215,7 @@ router.post(
           {
             new: true,
           }
-        );
+        ).populate('user', 'name');
         return res.json(updatedRequest);
       }
       // For new Requisition
@@ -239,7 +238,8 @@ router.post(
           },
         ],
       });
-      const result = await request.save();
+      let result = await request.save();
+      result = await Requisition.findById(result._id).populate('user', 'name') 
       return res.json(result);
     } catch (error) {
       console.log(error);
@@ -303,7 +303,7 @@ router.put('/:id', auth, async (req, res) => {
       {
         new: true,
       }
-    );
+    ).populate('user', 'name');
     return res.json(updatedRequest);
   } catch (error) {
     console.log(error);
