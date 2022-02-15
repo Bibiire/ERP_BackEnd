@@ -9,7 +9,11 @@ const { check, validationResult } = require('express-validator');
 // @Access  Private
 router.get('/', auth, async (req, res) => {
   try {
-    const vendors = await Vendor.find();
+    let queryParams = {};
+    if (req.query) {
+      queryParams = req.query;
+    }
+    const vendors = await Vendor.find(queryParams).sort({ created_at: -1 });
     res.json(vendors);
   } catch (error) {
     res.status(500).send('server down');
@@ -43,7 +47,7 @@ router.post(
       let result = await vendor.save();
       res.status(201).json(result);
     } catch (error) {
-      res.status(200).send('server down');
+      res.status(500).send('server down');
     }
   }
 );

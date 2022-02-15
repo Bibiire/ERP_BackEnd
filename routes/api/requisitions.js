@@ -69,7 +69,7 @@ router.get('/', auth, async (req, res) => {
   }
   try {
     const requests = await Requisition.find(cloneQueryParams)
-      .sort({ date: -1 })
+      .sort({"created_at":-1})
       .populate({
         path: 'verify',
         populate: {
