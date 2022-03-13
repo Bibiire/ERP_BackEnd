@@ -24,7 +24,7 @@ router.get('/', auth, async (req, res) => {
   let role = req.query?.role || req.user.role[0];
   switch (role) {
     case 'user':
-      case 'admin':
+    case 'admin':
       queryParams.user = req.user.id;
       cloneQueryParams = queryParams;
       break;
@@ -70,7 +70,7 @@ router.get('/', auth, async (req, res) => {
   }
   try {
     const requests = await Requisition.find(cloneQueryParams)
-      .sort({"created_at":-1})
+      .sort({ created_at: -1 })
       .populate({
         path: 'verify',
         populate: {
@@ -240,7 +240,7 @@ router.post(
         ],
       });
       let result = await request.save();
-      result = await Requisition.findById(result._id).populate('user', 'name') 
+      result = await Requisition.findById(result._id).populate('user', 'name');
       return res.json(result);
     } catch (error) {
       console.log(error);
