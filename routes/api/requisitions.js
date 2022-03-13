@@ -24,6 +24,7 @@ router.get('/', auth, async (req, res) => {
   let role = req.query?.role || req.user.role[0];
   switch (role) {
     case 'user':
+      case 'admin':
       queryParams.user = req.user.id;
       cloneQueryParams = queryParams;
       break;
